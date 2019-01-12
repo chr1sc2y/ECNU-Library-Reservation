@@ -4,7 +4,6 @@ import requests
 
 
 class LibraryReserve:
-    files = []
     urls = ["http://202.120.82.2:8081/ClientWeb/pro/ajax/login.aspx",
             "http://202.120.82.2:8081/ClientWeb/pro/ajax/reserve.aspx"]
     headers = {
