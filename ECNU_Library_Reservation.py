@@ -9,9 +9,9 @@ class LibraryReserve:
     headers = {
         'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
     user_info = {"act": "login"}
-    time_info = {"dev_id": "3676547", "lab_id": "3674920", "kind_id": "3675133",
-                 "type": "dev", "act": "set_resv",
-                 "_": "1547215554524"}
+    time_info = {"lab_id": "3674920", "type": "dev",
+                 "act": "set_resv", "_": "1547215554524"}
+
     result_info = []
     num = 0
 
@@ -33,9 +33,12 @@ class LibraryReserve:
     def ConcatInfo(self, config_file):
         file = open(config_file, 'r')
         info = json.load(file)
+
+        # setting user id and password
         self.user_info['id'] = info['student ID']
         self.user_info['pwd'] = info['password']
 
+        # setting reservation time
         start_str = info['start time']
         end_str = info['end time']
         self.time_info['start'] = start_str
@@ -47,6 +50,13 @@ class LibraryReserve:
         self.time_info['start_time'] = start_time
         self.time_info['end_time'] = end_time
 
+        # setting reservationg room
+        room_file = open("./room.json", 'r')
+        room_info = json.load(room_file)
+        self.time_info['dev_id'] = room_info[info['room']]['dev_id']
+        self.time_info['kind_id'] = room_info[info['room']]['kind_id']
+
+        # setting output info
         self.result_info.append("user info : \n")
         for key, value in self.user_info.items():
             self.result_info.append(key+' = ' + value+'\n')
@@ -85,6 +95,8 @@ class LibraryReserve:
         del self.time_info['end_time']
         del self.time_info['start']
         del self.time_info['end']
+        del self.time_info['dev_id']
+        del self.time_info['kind_id']
         self.result_info.clear()
 
 
