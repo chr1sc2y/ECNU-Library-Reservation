@@ -14,6 +14,7 @@ class LibraryReserve:
                  "act": "set_resv", "_": "1547215554524"}
     config_file = "./config.json"
     year, month, day = 0, 0, 0
+    info = {}
 
     result_info = []
     num = 0
@@ -22,8 +23,14 @@ class LibraryReserve:
         pass
 
     def Run(self):
+        self.Reserve()
+        self.PrintResult()
+        self.UpdateDate()
+
+    def Reserve(self):
         file = open(self.config_file, 'r')
         info = json.load(file)
+        self.info = info
 
         # set user id and password
         self.user_info['id'] = info['id']
@@ -87,8 +94,6 @@ class LibraryReserve:
             output = text[text.find('msg":"') + 6:text.find('","data"')]
             print(output)
 
-        self.PrintResult()
-
     def PrintResult(self):
         file_name = "./result" + "_" + \
             str(self.year) + '-' + str(self.month) + \
@@ -100,6 +105,30 @@ class LibraryReserve:
         del self.time_info['start']
         del self.time_info['end']
         self.result_info.clear()
+
+    def UpdateDate(self):
+        self.year = int(self.year)
+        self.month = int(self.month)
+        self.day = int(self.day)
+        self.day += 1
+        if self.day == 32 and (self.month == 1 or self.month == 3 or self.month == 5 or self.month == 7 or self.month == 8 or self.month == 10 or self.month == 12):
+            self.day = 1
+            self.month += 1
+            if self.month == 13:
+                self.year += 1
+                self.month = 1
+        elif self.day == 31 and (self.month == 4 or self.month == 6 or self.month == 9 or self.month == 11):
+            self.day = 1
+            self.month += 1
+        elif self.day == 29 and self.month == 2:
+            self.day = 1
+            self.month += 1
+        self.info["year"] = str(self.year)
+        self.info["month"] = str(self.month)
+        self.info["day"] = str(self.day)
+
+        file = open(self.config_file, 'w')
+        json.dump(self.info, file)
 
 
 libraryReserve = LibraryReserve()
