@@ -1,6 +1,17 @@
 {
-    "student ID": "xxxx",
-    "password": "xxxx",
-    "start time": "xxxx-xx-xx xx:xx", 
-    "end time": "xxxx-xx-xx xx:xx"
+    "id": "10132510139",
+    "pwd": "Czy_84963496432",
+    "year": "2019",
+    "month": "01",
+    "day": "14",
+    "start time": [
+        "08:30",
+        "13:00",
+        "17:30"
+    ],
+    "end time": [
+        "12:30",
+        "17:00",
+        "21:30"
+    ]
 }

@@ -9,8 +9,11 @@ class LibraryReserve:
     headers = {
         'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
     user_info = {"act": "login"}
-    time_info = {"lab_id": "3674920", "type": "dev",
+    time_info = {"dev_id": "3676547", "lab_id": "3674920",
+                 "kind_id": "3675133", "type": "dev",
                  "act": "set_resv", "_": "1547215554524"}
+    config_file = "./config.json"
+    year, month, day = 0, 0, 0
 
     result_info = []
     num = 0
@@ -19,84 +22,83 @@ class LibraryReserve:
         pass
 
     def Run(self):
-        files = os.listdir("./reservations")
-        for file in files:
-            if not os.path.isdir(file):
-                name = str(file)
-                if(name == ".DS_Store"):
-                    continue
-                num = name[name.find('_') + 1:name.find('.')]
-                self.ConcatInfo("./reservations/" + file)
-                self.Reserve()
-                self.Result(num)
-
-    def ConcatInfo(self, config_file):
-        file = open(config_file, 'r')
+        file = open(self.config_file, 'r')
         info = json.load(file)
 
-        # setting user id and password
-        self.user_info['id'] = info['student ID']
-        self.user_info['pwd'] = info['password']
+        # set user id and password
+        self.user_info['id'] = info['id']
+        self.user_info['pwd'] = info['pwd']
 
-        # setting reservation time
-        start_str = info['start time']
-        end_str = info['end time']
-        self.time_info['start'] = start_str
-        self.time_info['end'] = end_str
-        start_time = start_str[start_str.find(
-            ' ') + 1:start_str.find(':')] + start_str[start_str.find(':') + 1:]
-        end_time = start_str[start_str.find(
-            ' ') + 1:start_str.find(':')] + end_str[start_str.find(':') + 1:]
-        self.time_info['start_time'] = start_time
-        self.time_info['end_time'] = end_time
-
-        # setting reservationg room
-        room_file = open("./room.json", 'r')
-        room_info = json.load(room_file)
-        self.time_info['dev_id'] = room_info[info['room']]['dev_id']
-        self.time_info['kind_id'] = room_info[info['room']]['kind_id']
-
-        # setting output info
+        # output user info
         self.result_info.append("user info : \n")
         for key, value in self.user_info.items():
             self.result_info.append(key+' = ' + value+'\n')
-        self.result_info.append("\ntime info : \n")
-        for key, value in self.time_info.items():
-            self.result_info.append(key+' = ' + value+'\n')
-        self.result_info.append('\n')
 
-    def Reserve(self):
+        # login
         login_post = requests.post(url=self.urls[0],
                                    data=self.user_info,
                                    headers=self.headers)
         user_cookie = login_post.cookies
+
+        # output login info
         self.result_info.append("login_post = "+str(login_post)+'\n')
         self.result_info.append("login_post.text = "+login_post.text+'\n')
         self.result_info.append("user_cookie = "+str(user_cookie)+'\n')
 
-        time_get = requests.get(url=self.urls[1],
-                                params=self.time_info,
-                                cookies=user_cookie,
-                                headers=self.headers)
-        self.result_info.append("time_get = "+str(time_get)+'\n')
-        self.result_info.append("time_get.text = "+time_get.text+'\n')
+        # set reservation time
+        start_time_list = info['start time']
+        end_time_list = info['end time']
+        self.year = info["year"]
+        self.month = info["month"]
+        self.day = info["day"]
+        n = len(start_time_list)
+        for i in range(n):
+            start = str(self.year) + '-' + str(self.month) + '-' + \
+                str(self.day) + ' ' + start_time_list[i]
+            end = str(self.year) + '-' + str(self.month) + '-' + \
+                str(self.day) + ' ' + end_time_list[i]
+            self.time_info['start'] = start
+            self.time_info['end'] = end
+            start_time = start[start.find(
+                ' ') + 1:start.find(':')] + start[start.find(':') + 1:]
+            end_time = start[start.find(
+                ' ') + 1:start.find(':')] + end[start.find(':') + 1:]
+            self.time_info['start_time'] = start_time
+            self.time_info['end_time'] = end_time
 
-        text = time_get.text
-        output = text[text.find('msg":"') + 6:text.find('","data"')]
-        print(output)
+            # output time info
+            self.result_info.append("\ntime info : \n")
+            for key, value in self.time_info.items():
+                self.result_info.append(key+' = ' + value+'\n')
+            self.result_info.append('\n')
 
-    def Result(self, num):
-        file_name = "./results/"+"result_" + str(num) + ".md"
+            # reserve rooms
+            time_get = requests.get(url=self.urls[1],
+                                    params=self.time_info,
+                                    cookies=user_cookie,
+                                    headers=self.headers)
+
+            # output reserve info
+            self.result_info.append("time_get = "+str(time_get)+'\n')
+            self.result_info.append("time_get.text = "+time_get.text+'\n')
+
+            # output result to console
+            text = time_get.text
+            output = text[text.find('msg":"') + 6:text.find('","data"')]
+            print(output)
+
+        self.PrintResult()
+
+    def PrintResult(self):
+        file_name = "./result" + "_" + \
+            str(self.year) + '-' + str(self.month) + \
+            '-' + str(self.day) + ".ign"
         file = open(file_name, 'w')
         file.writelines(self.result_info)
-        del self.user_info['id']
-        del self.user_info['pwd']
         del self.time_info['start_time']
         del self.time_info['end_time']
         del self.time_info['start']
         del self.time_info['end']
-        del self.time_info['dev_id']
-        del self.time_info['kind_id']
         self.result_info.clear()
 
 
