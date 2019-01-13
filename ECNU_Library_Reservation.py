@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+import datetime
 
 
 class LibraryReserve:
@@ -25,7 +26,6 @@ class LibraryReserve:
     def Run(self):
         self.Reserve()
         self.PrintResult()
-        self.UpdateDate()
 
     def Reserve(self):
         file = open(self.config_file, 'r')
@@ -53,11 +53,12 @@ class LibraryReserve:
         self.result_info.append("user_cookie = "+str(user_cookie)+'\n')
 
         # set reservation time
+        day_after_tomorrow = datetime.date.today() + datetime.timedelta(days=2)
+        self.year = str(day_after_tomorrow.year)
+        self.month = str(day_after_tomorrow.month)
+        self.day = str(day_after_tomorrow.day)
         start_time_list = info['start time']
         end_time_list = info['end time']
-        self.year = info["year"]
-        self.month = info["month"]
-        self.day = info["day"]
         n = len(start_time_list)
         for i in range(n):
             start = str(self.year) + '-' + str(self.month) + '-' + \
@@ -105,31 +106,6 @@ class LibraryReserve:
         del self.time_info['start']
         del self.time_info['end']
         self.result_info.clear()
-
-    def UpdateDate(self):
-        self.year = int(self.year)
-        self.month = int(self.month)
-        self.day = int(self.day)
-        self.day += 1
-        if self.day == 32 and (self.month == 1 or self.month == 3 or self.month == 5 or self.month == 7 or self.month == 8 or self.month == 10 or self.month == 12):
-            self.day = 1
-            self.month += 1
-            if self.month == 13:
-                self.year += 1
-                self.month = 1
-        elif self.day == 31 and (self.month == 4 or self.month == 6 or self.month == 9 or self.month == 11):
-            self.day = 1
-            self.month += 1
-        elif self.day == 29 and self.month == 2:
-            self.day = 1
-            self.month += 1
-        self.info["year"] = str(self.year)
-        self.info["month"] = str(self.month)
-        self.info["day"] = str(self.day)
-
-        file = open(self.config_file, 'w')
-        json.dump(self.info, file)
-
 
 libraryReserve = LibraryReserve()
 libraryReserve.Run()
