@@ -1,18 +1,16 @@
 自动预定华东师范大学图书馆小房间
 
 ## 使用方法
-1. 配置[Python3](https://www.python.org/downloads/)环境
-2. 克隆当前仓库
-3. 进入仓库目录
-4. 修改reservations文件夹下的reservation_x.json文件，设置你想预定的时间
-5. 等到当天晚上9：00（北京时间）
-6. 在命令行中输入 python3 ECNU_Lib_Reservation.py
-7. 如果命令行提示“操作成功！”则表示预定成功
+1. 克隆项目
+
+```
+git clone https://github.com/ZintrulCre/ECNU-Library-Reservation.git
+```
+
+2. 在reservations文件夹下新建数个json文件，文件名任意，在文件里按照reservations_template的格式设置你想预定的时间
+3. 在北京时间21：00的时候在命令行中输入 python3 ECNU_Lib_Reservation.py，如果命令行提示“操作成功！”则表示预定成功
 
 ## 注意事项
+- 需要[Python3](https://www.python.org/downloads/)环境
 - 目前只支持预定C426和C413
-
-## To do:
-- 前端
-- 打包Python
-- 服务器
+- 可以将该项目放到服务器上用crontab设置定时任务让其自动运行
