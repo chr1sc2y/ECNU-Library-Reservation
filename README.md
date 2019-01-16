@@ -7,7 +7,7 @@
 git clone https://github.com/ZintrulCre/ECNU-Library-Reservation.git
 ```
 
-2. 新建config.json文件，在文件里按照config_template.json的格式设置你想预定的时间（最多三个）
+2. 在config.json里设置你想预定的时间（最多三个）
 3. 在北京时间21：00的时候在命令行中输入 python3 ECNU_Lib_Reservation.py，如果命令行提示“操作成功！”则表示预定成功
 
 ## 注意事项

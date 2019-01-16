@@ -10,8 +10,7 @@ class LibraryReserve:
     headers = {
         'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
     user_info = {"act": "login"}
-    time_info = {"dev_id": "3676547", "lab_id": "3674920",
-                 "kind_id": "3675133", "type": "dev",
+    time_info = {"lab_id": "3674920", "type": "dev",
                  "act": "set_resv", "_": "1547215554524"}
     config_file = "./config.json"
     year, month, day = 0, 0, 0
@@ -31,6 +30,12 @@ class LibraryReserve:
         file = open(self.config_file, 'r')
         info = json.load(file)
         self.info = info
+
+        # setting reservationg room
+        room_file = open("./room.json", 'r')
+        room_info = json.load(room_file)
+        self.time_info['dev_id'] = room_info[info['room']]['dev_id']
+        self.time_info['kind_id'] = room_info[info['room']]['kind_id']
 
         # set user id and password
         self.user_info['id'] = info['id']
@@ -53,7 +58,7 @@ class LibraryReserve:
         self.result_info.append("user_cookie = "+str(user_cookie)+'\n')
 
         # set reservation time
-        day_after_tomorrow = datetime.date.today() + datetime.timedelta(days=2)
+        day_after_tomorrow = datetime.date.today() + datetime.timedelta(days=1)
         self.year = str(day_after_tomorrow.year)
         self.month = str(day_after_tomorrow.month)
         self.day = str(day_after_tomorrow.day)
@@ -101,11 +106,14 @@ class LibraryReserve:
             '-' + str(self.day) + ".ign"
         file = open(file_name, 'w')
         file.writelines(self.result_info)
-        del self.time_info['start_time']
-        del self.time_info['end_time']
         del self.time_info['start']
         del self.time_info['end']
+        del self.time_info['start_time']
+        del self.time_info['end_time']
+        del self.time_info['dev_id']
+        del self.time_info['kind_id']
         self.result_info.clear()
+
 
 libraryReserve = LibraryReserve()
 libraryReserve.Run()
